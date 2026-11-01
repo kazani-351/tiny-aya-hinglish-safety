@@ -8,4 +8,8 @@
 outs/
 data/
 *.jsonl
+__pycache__/
+probes/crash_*.py
+probes/ctrl_c.py
+probes/sleep_for_ctrl_c.py
 HANDOFF.md
