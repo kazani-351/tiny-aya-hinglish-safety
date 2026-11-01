@@ -1,0 +1,11 @@
+.env
+.env.*
+.mcp.json
+*token*
+*.key
+.DS_Store
+# never commit model outputs or translated harmful prompts
+outs/
+data/
+*.jsonl
+HANDOFF.md
