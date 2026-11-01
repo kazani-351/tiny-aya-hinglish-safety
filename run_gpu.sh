@@ -72,7 +72,7 @@ if [ -n "$UPLOAD" ]; then
   $COLAB upload -s "$NAME" "$UPLOAD" "/content/$(basename "$UPLOAD")" || { echo "FAIL: data upload" >&2; exit 1; }
 fi
 $COLAB exec -s "$NAME" --timeout "$EXEC_TIMEOUT" -f "$SCRIPT" 2>&1 | tee "$EXEC_LOG"
-if ! tail -5 "$EXEC_LOG" | grep -q '^RUN_OK'; then
+if ! grep -a -q '^RUN_OK' "$EXEC_LOG"; then  # whole log: the colab client can print a traceback after RUN_OK
   echo "[run_gpu] FAIL: remote script did not finish (no RUN_OK line)" >&2
   exit 1
 fi
