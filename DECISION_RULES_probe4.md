@@ -42,3 +42,9 @@
 - Translations are unreviewed drafts, so probe 4 is a pilot. The study rerun uses kazani's hand-fixed prompts.
 - The HarmBench classifier's own template says generations "must be in English, or otherwise easy for English-speakers to identify", so its Hindi/Hinglish labels are checked against hand labels before any judge number is published.
 - One model, greedy decoding, 96 new tokens, alpha 0.3 only.
+
+## Rule 6: does the article lead with the OTHER (misunderstanding) labelling difference? (added 2026-11-01, before any probe-4 reply was labelled)
+
+- Kazani labels, blind under `RUBRIC.md`, the 64 harmful replies from probe 4's `base` and `en_L15` conditions (32 each, Hindi + Hinglish, shuffled, condition hidden).
+- Among the Hinglish replies the HarmBench judge scored "no" (not harmful), count those kazani labels OTHER (misread prompt, gibberish) or that drifted out of Hindustani.
+- **Lead with the labelling difference** if that share is 20% or more. Otherwise lead with the replication and tool feedback, and report OTHER as a methods section.
