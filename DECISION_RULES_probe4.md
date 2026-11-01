@@ -60,3 +60,9 @@
 - Numerator: of those, the ones kazani labels **OTHER** (misread prompt, gibberish, cut off before any content or refusal). Language plays no part in the numerator.
 - Lead with the labelling difference if the share is **20% or more**. Otherwise lead with the replication and tool feedback.
 - Reported separately, whatever Rule 6 says: (a) English replies to Hinglish prompts, and (b) refusals in a language other than Hindi/Urdu/English. These are a language-fidelity finding about the model, not a judge error.
+
+### Rule 6 duplicate handling (2026-11-01, before kazani reported any label)
+
+- Counted before labelling: base vs en_L15 replies are word-for-word identical for 2 of 16 Hinglish prompts and 0 of 16 Hindi prompts.
+- Rule 6 counts word-for-word identical replies to the same prompt **once** (numerator and denominator).
+- Both copies stay in `to_label.csv`. If kazani gives the two copies different labels, that is reported as an intra-rater inconsistency and the pair is excluded from Rule 6.
