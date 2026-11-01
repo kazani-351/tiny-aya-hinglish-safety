@@ -30,6 +30,7 @@ tok = AutoTokenizer.from_pretrained(REPO)
 model = AutoModelForCausalLM.from_pretrained(REPO, dtype=torch.float16, device_map="cuda").eval()
 prompts = [json.loads(l) for l in open("/content/prompts.jsonl")]
 DECODES = {"greedy": None, "s1": 1, "s2": 2, "s3": 3}
+os.makedirs("/content/out", exist_ok=True)
 out = open("/content/out/script_probe.jsonl", "w")
 res = {}
 for form in ("hi", "hi_roman", "hinglish"):

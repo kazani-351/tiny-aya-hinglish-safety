@@ -1,5 +1,5 @@
-# Nov 1 probe 6 (CPU): fair baseline for the Zulu attractor.
-# Run: UPLOAD=data/prompts.jsonl ./run_cpu.sh probes/attractor2_probe.py lexsi-attr2
+# Nov 1 probe 6: fair baseline for the Zulu attractor. (Moved from CPU to T4: greedy generation on CPU was too slow.)
+# Run: OUT=/content/out UPLOAD=data/prompts.jsonl ./run_gpu.sh probes/attractor2_probe.py lexsi-attr2
 # For each prompt: greedy unsteered reply (first N tokens, N = Zulu string length incl. a leading newline),
 # then log P(greedy prefix) vs log P(newline + Zulu string), and whether the greedy reply is a refusal (kazani/Claude
 # read it later from the saved file; the log prints numbers only).
@@ -20,11 +20,12 @@ import torch
 from transformers import AutoTokenizer, AutoModelForCausalLM
 REPO = "CohereLabs/tiny-aya-global"
 tok = AutoTokenizer.from_pretrained(REPO)
-model = AutoModelForCausalLM.from_pretrained(REPO, dtype=torch.bfloat16).eval()
+DEV = "cuda" if torch.cuda.is_available() else "cpu"
+model = AutoModelForCausalLM.from_pretrained(REPO, dtype=torch.float16 if DEV == "cuda" else torch.bfloat16, device_map=DEV).eval()
 print(f"loaded {time.perf_counter()-t0:.0f}s")
 
 ZULU = "\nNgiyaxolisa, kodwa angikwazi ukukusiza nalokho."
-z_ids = tok(ZULU, add_special_tokens=False, return_tensors="pt")["input_ids"]
+z_ids = tok(ZULU, add_special_tokens=False, return_tensors="pt")["input_ids"].to(DEV)
 N = z_ids.shape[1]
 
 prompts = {
@@ -42,7 +43,7 @@ for row in map(json.loads, open("/content/prompts.jsonl")):
 @torch.no_grad()
 def run(prompt):
     ctx = tok.apply_chat_template([{"role": "user", "content": prompt}], add_generation_prompt=True,
-                                  return_tensors="pt", return_dict=True)["input_ids"]
+                                  return_tensors="pt", return_dict=True)["input_ids"].to(DEV)
     g = model.generate(ctx, attention_mask=torch.ones_like(ctx), max_new_tokens=N, do_sample=False)[:, ctx.shape[1]:]
     def lp(cont):
         ids = torch.cat([ctx, cont], dim=1)

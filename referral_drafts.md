@@ -2,7 +2,7 @@
 
 Link: https://hackathon.lexsi.ai/r/u327uzyy (verified: the poster QR at ~/Downloads/lexsi-referral-poster.png decodes to this link; poster has no name on it).
 Rules: only registrations before **Nov 5** count; credits only for referred teams that make a **valid submission** (+$5 at 2 teams, +$10 at 5, +$20 at 10, +$45 at 20, +$80 at 35, +$90 at 50).
-Status: DRAFTS, not posted. One post per platform; no reposting (Farcaster history).
+Status: X + Farcaster POSTED 2026-11-01 (https://x.com/kazani351/status/2116833868288602476, https://farcaster.xyz/kazani/0x7c40944c). WhatsApp: not yet. One post per platform; no reposting (Farcaster history).
 
 ## X (attach poster)
 Lexsi Labs is running an AI safety hackathon with Cohere Labs and Hugging Face. Online, free, Nov 1 to 21. Registration closes Nov 5.
