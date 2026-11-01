@@ -2,6 +2,7 @@
 # Run a local Python script on a free Colab T4 with the HF token available, then tear down.
 # Usage: ./run_gpu.sh script.py [session-name]
 #   OUT=/content/out ./run_gpu.sh gen.py   -> also downloads that remote dir's files into ./outs/
+#   UPLOAD=outs/x.jsonl ./run_gpu.sh s.py   -> uploads one data file to /content/x.jsonl before the script runs
 # The token file is uploaded to the VM, read by the script, deleted there, and never printed.
 # Cleanup (delete token on VM, verify, stop VM, verify) runs on normal exit, crash, Ctrl-C,
 # kill and terminal close. Not `set -e`: cleanup must run even if a step fails.
@@ -19,6 +20,9 @@ EXEC_LOG=$(mktemp -t run_gpu)
 
 if [ -z "$SCRIPT" ] || [ ! -f "$SCRIPT" ]; then
   echo "usage: $0 script.py [session-name]" >&2; exit 2
+fi
+if [ -n "$UPLOAD" ] && [ ! -f "$UPLOAD" ]; then
+  echo "FAIL: UPLOAD file $UPLOAD missing" >&2; exit 2
 fi
 if [ ! -f "$TOKEN_FILE" ]; then
   echo "FAIL: $TOKEN_FILE missing (see HANDOFF.md, Tooling)" >&2; exit 2
@@ -63,6 +67,10 @@ $COLAB upload -s "$NAME" "$TOKEN_FILE" /content/hf.env || { echo "FAIL: token up
 # Positive control: proves the "token file not on VM" check in cleanup can see the file.
 $COLAB ls -s "$NAME" /content 2>/dev/null | grep -q 'hf\.env' \
   || { echo "FAIL: uploaded token not visible via colab ls; cleanup check would be blind" >&2; exit 1; }
+# Optional data file for the script (e.g. saved replies): UPLOAD=outs/x.jsonl -> /content/x.jsonl
+if [ -n "$UPLOAD" ]; then
+  $COLAB upload -s "$NAME" "$UPLOAD" "/content/$(basename "$UPLOAD")" || { echo "FAIL: data upload" >&2; exit 1; }
+fi
 $COLAB exec -s "$NAME" --timeout "$EXEC_TIMEOUT" -f "$SCRIPT" 2>&1 | tee "$EXEC_LOG"
 if ! tail -5 "$EXEC_LOG" | grep -q '^RUN_OK'; then
   echo "[run_gpu] FAIL: remote script did not finish (no RUN_OK line)" >&2
