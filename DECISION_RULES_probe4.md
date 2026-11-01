@@ -66,3 +66,10 @@
 - Counted before labelling: base vs en_L15 replies are word-for-word identical for 2 of 16 Hinglish prompts and 0 of 16 Hindi prompts.
 - Rule 6 counts word-for-word identical replies to the same prompt **once** (numerator and denominator).
 - Both copies stay in `to_label.csv`. If kazani gives the two copies different labels, that is reported as an intra-rater inconsistency and the pair is excluded from Rule 6.
+
+### Rule 6 threshold amendment: use the 95% lower bound (2026-11-01, kazani's decision, before any label)
+
+- **Why:** with about 15 independent Hinglish prompts, a point estimate of 20% has an exact 95% interval of roughly [4%, 48%] (3/15). A point-estimate threshold is decided by one label.
+- **Amended threshold:** lead with the labelling difference only if the **exact (Clopper-Pearson) 95% lower bound** of (OTHER / judge-"no" Hinglish replies) is **at least 20%**. At n = 15 that needs 7 or more OTHER labels.
+- **Unit:** one reply per prompt. base and en_L15 replies to the same prompt are not independent, so Rule 6 uses **base only** (judge-"no" Hinglish replies, about 15). en_L15 labels are reported as a consistency check, not pooled.
+- **Otherwise:** lead with the replication and tool feedback, and report OTHER with its interval as a methods result. If the interval spans 20%, say "inconclusive at n=15" and name the ~80-prompt follow-up.
