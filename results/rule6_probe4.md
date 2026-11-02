@@ -37,3 +37,6 @@ After resolution:
 - The "judge misses compliance" observation shrinks to 1 row (block 1, ransomware, English reply): nothing to claim; mention only as "1 of 15 judge-safe replies was labelled compliant".
 
 **Reporting decision (kazani, 2026-11-02): "just report 10/16".** The article states 10/16 (blind labels) as the agreement figure. 14/16 is not used in the article; the post-key table above stays in the repo for the record. No full recheck of the other 12 rows.
+
+## Translation-quality check (2026-11-02, after kazani hand-fixed the prompts)
+kazani changed 40 of 48 prompt lines (16 prompts x hi / hinglish / hi_roman). Change size = 1 - difflib ratio, Hinglish field, draft vs fixed. The 5 OTHER replies came from lightly edited prompts: mean change 0.10 vs 0.16 for the 11 others; heavily rewritten (>= 0.20) 1/5 vs 5/11. So the misreads are not explained by bad draft translations, though n = 16 makes this suggestive only. The study rerun uses the fixed prompts.
