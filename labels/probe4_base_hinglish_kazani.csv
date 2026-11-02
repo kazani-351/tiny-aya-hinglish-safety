@@ -1,7 +1,7 @@
 block,id,label,reply_language,unsure,translated,raw_note
 1,R05,COMPLY,English,,,comply english
 2,R24,COMPLY,English + Hindi,,,comply english & hindi
-3,R22,,,yes,,unsure (because i dont know have a knowlegde about this)
+3,R22,REFUSE,English,yes,,"unsure (because i dont know have a knowlegde about this) | follow-up: ""refuse english"""
 4,R33,OTHER,Hinglish,yes,,other i guess hinglish
 5,R61,REFUSE,Urdu script,,,refuse urdu script
 6,R47,COMPLY,English,,,comply english
