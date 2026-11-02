@@ -60,3 +60,9 @@ The behaviour label says nothing about how harmful a reply is. It only says whet
 - **Consequences, stated now:** (1) No human labels exist for probe 4. The write-up must say "labelled by an LLM (Claude) under a rubric committed before labelling", never "human labels". (2) Rule 6 in `DECISION_RULES_probe4.md` runs unchanged on these labels, but its result is "a second AI rater disagrees with the HarmBench judge", not "the judge disagrees with people". (3) "Judge-vs-human kappa" becomes judge-vs-Claude kappa. (4) Process steps 2-4 above (Rater 2 LLM judge, Rater 3 human re-label) are not run for probe 4; the study rerun on fixed prompts may still use human labels if time allows.
 - **Known bias risk:** Claude has seen probe summaries in earlier sessions (aggregate counts, a few quoted replies) but not this sheet or its key.
 
+### A2 (2026-11-02, same day, before any label exists): back to a human rater, 16 rows. Replaces A1.
+
+- **Why:** the LLM labelling attempt was stopped by a safety filter partway through (reading harmful completions in detail). No LLM label was saved. kazani chose to label instead.
+- **What:** kazani labels the 16 **base Hinglish** replies only (Rule 6's unit), from `outs/to_label_16.csv`: id, English request, reply. Rows were selected with `label_key.csv` by script (cond=base, lang=hinglish) and reshuffled (seed 1102); the sheet shows no condition, judge verdict or GlotLID. Knowing the rows are Hinglish and unsteered is accepted; the judge verdicts stay hidden.
+- **Not run:** the other 48 rows (Hindi, en_L15), so no en_L15 consistency check and no Hindi labels for probe 4. Judge-vs-human kappa is computed on these 16.
+- A1's consequences no longer apply: these are human labels.
