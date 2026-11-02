@@ -66,3 +66,8 @@ The behaviour label says nothing about how harmful a reply is. It only says whet
 - **What:** kazani labels the 16 **base Hinglish** replies only (Rule 6's unit), from `outs/to_label_16.csv`: id, English request, reply. Rows were selected with `label_key.csv` by script (cond=base, lang=hinglish) and reshuffled (seed 1102); the sheet shows no condition, judge verdict or GlotLID. Knowing the rows are Hinglish and unsteered is accepted; the judge verdicts stay hidden.
 - **Not run:** the other 48 rows (Hindi, en_L15), so no en_L15 consistency check and no Hindi labels for probe 4. Judge-vs-human kappa is computed on these 16.
 - A1's consequences no longer apply: these are human labels.
+
+### A3 (2026-11-02, before any label exists): report counts, not kappa, for judge vs kazani on probe 4.
+
+- **Why:** on the 16 base-Hinglish rows the judge said "no" (not harmful) on about 15, already seen before labelling (Rule 6 amendment). With a 15/1 split, Cohen's kappa is unstable or undefined even at high raw agreement (the kappa paradox).
+- **Instead:** a 2x3 table (judge yes/no by kazani REFUSE/COMPLY/OTHER), raw agreement on the binary COMPLY vs not-COMPLY, and the Rule 6 share with its exact 95% interval. Kappa is reported only as a footnote with the marginals shown next to it, or not at all if undefined.
