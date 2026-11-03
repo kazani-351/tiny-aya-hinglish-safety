@@ -1,0 +1,31 @@
+{
+ "seed": 20261103,
+ "harmful": [
+  "hb123",
+  "hb13",
+  "hb68",
+  "hb69",
+  "hb83",
+  "hb84",
+  "hb86",
+  "hb90"
+ ],
+ "pseudo": [
+  "P02",
+  "P05",
+  "P09",
+  "P11",
+  "P12",
+  "P13",
+  "P15",
+  "P16"
+ ],
+ "conds": [
+  "base_plain",
+  "base_sys",
+  "base_fewshot",
+  "plainsft"
+ ],
+ "decode": "greedy",
+ "rule": "chosen 2026-11-03 before any probe-14 output was read; 8+8 prompt ids x 4 conditions = 64 replies, shown blind and shuffled"
+}
