@@ -81,5 +81,5 @@ if ! grep -a -q '^RUN_OK' "$EXEC_LOG"; then  # whole log: the colab client can p
   echo "[run_gpu] FAIL: remote script did not finish (no RUN_OK line)" >&2
   exit 1
 fi
-exit  # keep bash from reading past the group if this file was edited mid-run
+exit 0  # RUN_OK was seen; keep bash from reading past the group if this file was edited mid-run
 }
