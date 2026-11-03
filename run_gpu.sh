@@ -3,7 +3,8 @@
 # Usage: ./run_gpu.sh script.py [session-name]
 #   OUT=/content/out ./run_gpu.sh gen.py   -> also downloads that remote dir's files into ./outs/
 #   UPLOAD=outs/x.jsonl ./run_gpu.sh s.py   -> uploads data file(s) to /content/<name> before the script runs
-#   (space-separated list allowed; Colab's upload API rejected a 121 MB file with 400, so split big files first)
+#   (space-separated list allowed; Colab's upload API rejected a 121 MB file with 400, so split big files first;
+#    paths must not contain spaces or wildcards, and basenames must be unique: each lands at /content/<basename>)
 # The token file is uploaded to the VM, read by the script, deleted there, and never printed.
 # Cleanup (delete token on VM, verify, stop VM, verify) runs on normal exit, crash, Ctrl-C,
 # kill and terminal close. Not `set -e`: cleanup must run even if a step fails.
