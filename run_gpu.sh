@@ -11,6 +11,9 @@
 # `colab exec` exits 0 even when the remote script raises, so every script must print
 # RUN_OK as its last line; without it this runner exits 1.
 
+# The whole body is one { ... } group: bash parses it fully before running any of it, so editing this file
+# while a run is in progress can't corrupt that run (it did once, 2026-11-03: syntax error after an in-run edit).
+{
 SCRIPT="$1"
 NAME="${2:-lexsi-$(date +%H%M%S)}"
 TOKEN_FILE="$HOME/.config/hf.env"
@@ -78,3 +81,5 @@ if ! grep -a -q '^RUN_OK' "$EXEC_LOG"; then  # whole log: the colab client can p
   echo "[run_gpu] FAIL: remote script did not finish (no RUN_OK line)" >&2
   exit 1
 fi
+exit  # keep bash from reading past the group if this file was edited mid-run
+}

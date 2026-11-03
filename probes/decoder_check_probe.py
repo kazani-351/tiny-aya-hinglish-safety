@@ -10,6 +10,7 @@
 # (Colab's upload API returned 400 on the 121 MB bundle in one piece, so it is split in 3 and reassembled here.)
 import subprocess, sys, os, time, json, glob, tarfile
 t0 = time.perf_counter()
+subprocess.run([sys.executable, "-m", "pip", "uninstall", "-y", "-q", "torchao"], check=False)  # Colab's torchao 0.10 breaks peft import (run 1, 2026-11-03)
 r = subprocess.run([sys.executable, "-m", "pip", "install", "-q", "fasttext==0.9.3", "peft"], capture_output=True, text=True)
 assert r.returncode == 0, r.stderr[-500:]
 from huggingface_hub import login, hf_hub_download
@@ -60,6 +61,10 @@ SETTINGS = {"full": 1.0, "p09": 0.9}
 SEEDS = (1, 2, 3)
 BATCH = 8
 summary = {}
+# Optional: upload only_conds.txt (e.g. "plainsft") to rerun just those conditions; output goes to a separate file.
+# (env vars don't reach the remote kernel through `colab exec`)
+ONLY = open("/content/only_conds.txt").read().strip() if os.path.exists("/content/only_conds.txt") else ""
+OUTF = "/content/out/decoder_check" + (f"_{ONLY}" if ONLY else "") + ".jsonl"
 
 def gen_all(model, cond, build):
     texts = [tok.apply_chat_template(build(x["prompt"]), add_generation_prompt=True, tokenize=False) for x in EVAL]
@@ -78,7 +83,7 @@ def gen_all(model, cond, build):
                     top = preds[0][1].replace("__label__", "")
                     ok = top.split("_")[0] in H and top.endswith("_Latn")
                     kept[x["kind"]] += ok; mya += top == "mya_Mymr"
-                    with open("/content/out/decoder_check.jsonl", "a") as f:
+                    with open(OUTF, "a") as f:
                         f.write(json.dumps({"cond": cond, "setting": sname, "seed": seed, "kind": x["kind"], "id": x["id"],
                                             "reply": reply, "lid": top, "hinglish_kept": ok}, ensure_ascii=False) + "\n")
             summary.setdefault(cond, {}).setdefault(sname, {})[seed] = {"harmful": kept["harmful"], "pseudo": kept["pseudo"], "burmese": mya}
@@ -86,10 +91,12 @@ def gen_all(model, cond, build):
 
 base = AutoModelForCausalLM.from_pretrained(REPO, dtype=torch.float16, device_map="cuda").eval()
 for c, b in CONDS.items():
+    if ONLY and c not in ONLY.split(","):
+        continue
     gen_all(base, c, b)
 tuned = PeftModel.from_pretrained(base, ADAPTER).eval()  # base not used again after this
 gen_all(tuned, "plainsft", CONDS["base_plain"])
-with open("/content/out/decoder_check_summary.json", "w") as f:
+with open(OUTF.replace(".jsonl", "_summary.json"), "w") as f:
     json.dump(summary, f, indent=1)
 print("SUMMARY", json.dumps(summary))
 print(f"total {time.perf_counter()-t0:.0f}s")
