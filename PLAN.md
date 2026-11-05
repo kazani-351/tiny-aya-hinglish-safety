@@ -87,7 +87,6 @@ Rule of thumb for the post: kappa >= 0.6 = "substantial agreement", say so; belo
 ## Stretch (only if entering Lexsi fully)
 Chain AuditKIT for eval (Track 2 needs 2+ repos), then SafeTune Recover/Steer to repair Hindi refusal, before/after metrics, artifacts on HF (repaired checkpoints only).
 
-Referral link (for the thread / any share): https://hackathon.lexsi.ai/r/u327uzyy
 
 ## Timing proof (added 2026-11-05)
 Commits 24ec288 and 6f19fb2 are stamped with OpenTimestamps (`proofs/commit-<sha>.sha.ots`). The proof holds only if those exact SHAs are public. Anything that rewrites them or an ancestor breaks it: `git rebase` over them, `git commit --amend` on them, `git filter-repo` / BFG (e.g. to drop a file from history), changing author or email in history, retro-signing, LFS migration, or merging a PR with "Squash and merge" or "Rebase and merge" on GitHub. Safe: new commits on top (including `git rm` of a file), plain `git push` of main, a PR merged with "Create a merge commit", forks and clones.
