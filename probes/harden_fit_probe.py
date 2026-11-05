@@ -1,7 +1,9 @@
-# Nov 1 probe 8: can SafeTune Harden LoRA-train Tiny Aya Global on a free T4?
+# Nov 3 probe 10 (was probe 8): can SafeTune's PlainSFTTrainer LoRA-train Tiny Aya Global on a free T4?
+# Repair target decided 2026-11-03: PlainSFT on the free T4 (kazani). SafeGrad test dropped (second model copy).
 # Run: OUT=/content/out EXEC_TIMEOUT=3000 ./run_gpu.sh probes/harden_fit_probe.py lexsi-harden
-# Test A: PlainSFTTrainer (LoRA, no reference model) on 16 tiny Hinglish examples (8 refusals, 8 helpful), batch 1.
-# Test B: SafeGradTrainer (loads a frozen reference copy too) on the same data: expected to be tight / OOM on 15 GB.
+# PlainSFTTrainer (LoRA via lora_wrap, no try/except fallback: source checked 2026-11-03) on 16 tiny Hinglish
+# examples (8 refusals, 8 helpful), batch 1. Guards against vacuous green: LoRA share must be < 5% of params,
+# and a lora_B weight (initialised to zero) must be non-zero after training, i.e. optimizer steps really happened.
 # Reports: success or the exact error type, peak GPU memory, seconds per step, and a language-ID check of 2 replies
 # from the A-trained model on prompts NOT in the study set. Fit check only: the data here is a placeholder for CuratorKIT.
 import subprocess, sys, os, time, json, gc, traceback
@@ -25,7 +27,20 @@ import torch, fasttext
 from datasets import Dataset
 from transformers import AutoTokenizer
 import safetune
-from safetune.runner.harden import PlainSFTTrainer, SafeGradTrainer
+from safetune.runner.harden import PlainSFTTrainer
+import safetune.runner.harden._base as _hb
+_probe = {}
+_orig_wrap = _hb.lora_wrap
+def _wrap(m):
+    pm = _orig_wrap(m)
+    tr_n = sum(p.numel() for p in pm.parameters() if p.requires_grad)
+    all_n = sum(p.numel() for p in pm.parameters())
+    _probe["trainable"], _probe["share"] = tr_n, tr_n / all_n
+    _probe["lora_B"] = next(p for n, p in pm.named_parameters() if "lora_B" in n)
+    print(f"[guard] LoRA trainable {tr_n/1e6:.1f}M = {100*tr_n/all_n:.2f}% | lora_B norm before {_probe['lora_B'].norm().item():.4g}")
+    assert _probe["share"] < 0.05, "not LoRA: too many trainable params (full fine-tune?)"
+    return pm
+_hb.lora_wrap = _wrap
 lid = fasttext.load_model(hf_hub_download("cis-lmu/glotlid", "model.bin"))
 REPO = "CohereLabs/tiny-aya-global"
 tok = AutoTokenizer.from_pretrained(REPO)
@@ -76,7 +91,10 @@ def run(name, make):
         trainer = make()
         path = trainer.train(ds, out_dir=f"/content/harden_{name}")
         dt = time.perf_counter() - t
-        result[name] = {"ok": True, "seconds": round(dt), "peak_gb": round(torch.cuda.max_memory_allocated() / 1e9, 2), "path": path}
+        b = _probe["lora_B"].norm().item()
+        print(f"[guard] lora_B norm after {b:.4g}")
+        assert b > 0, "lora_B still zero: no optimizer step happened (vacuous green)"
+        result[name] = {"ok": True, "lora_trainable_m": round(_probe["trainable"] / 1e6, 1), "lora_B_norm": b, "seconds": round(dt), "peak_gb": round(torch.cuda.max_memory_allocated() / 1e9, 2), "path": path}
     except Exception as e:
         result[name] = {"ok": False, "error_type": type(e).__name__, "error": str(e)[:300],
                         "peak_gb": round(torch.cuda.max_memory_allocated() / 1e9, 2), "seconds": round(time.perf_counter() - t)}
@@ -101,10 +119,8 @@ if result["A_plainsft"]["ok"]:
     del m; gc.collect(); torch.cuda.empty_cache()
     import shutil; shutil.rmtree(result["A_plainsft"]["path"], ignore_errors=True)
 
-run("B_safegrad", lambda: SafeGradTrainer(model_id=REPO, tokenizer=tok, epochs=1, batch_size=1, lr=2e-4, logging_steps=4))
-
 with open("/content/out/harden_fit.json", "w") as f:
     json.dump(result, f, indent=1)
-print("VERDICT:", "A fits" if result["A_plainsft"]["ok"] else "A failed", "|", "B fits" if result["B_safegrad"]["ok"] else "B failed")
+print("VERDICT:", "PlainSFT fits the T4" if result["A_plainsft"]["ok"] else "PlainSFT failed")
 print(f"total {time.perf_counter()-t0:.0f}s")
 print("RUN_OK")

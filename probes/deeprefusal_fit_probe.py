@@ -78,8 +78,42 @@ res = {}
 try:
     model = AutoModelForCausalLM.from_pretrained(REPO, dtype=torch.float16, device_map="cuda")
     print(f"loaded {torch.cuda.memory_allocated()/1e9:.2f} GB")
-    tr = DeepRefusalTrainer(model, tok, calib_n=32, epochs=1, batch_size=1, lr=2e-4, logging_steps=4)
+    # Run 2026-11-02 #1: target_modules=None -> peft can't auto-pick for cohere2 -> SafeTune silently fell back to
+    # full fine-tuning -> OOM. Name the Llama-style projections explicitly; fail loudly if any is absent.
+    # LoRA is applied inside train(): success shows peft's "trainable params:" line, failure the fallback warning.
+    TARGETS = ["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"]
+    leaf = {n.rsplit(".", 1)[-1] for n, _ in model.named_modules()}
+    missing = [t for t in TARGETS if t not in leaf]
+    print("lora targets missing from model:", missing)
+    assert not missing, f"target modules not in model: {missing}"
+    # Run 2026-11-02 #2: LoRA worked, but L_benign OOM'd on every step and SafeTune only warned -> refusal-only
+    # training reported as "fits". Fix: gradient checkpointing (set on the model; SafeTune has no option for it),
+    # and count SafeTune's fallback warnings so the run FAILS if the benign term is ever skipped.
+    import logging
+    class _Count(logging.Handler):
+        n = 0
+        def emit(self, rec):
+            msg = rec.getMessage()
+            if "L_benign computation failed" in msg or "Falling back to full-parameter" in msg:
+                _Count.n += 1
+    logging.getLogger("safetune").addHandler(_Count())
+    # Run 2026-11-02 #3: CheckpointError (64 vs 62 tensors). The ablation hook flips a coin with Python
+    # random.random() inside the forward; checkpoint recompute replays torch RNG, not Python's, so the hook
+    # re-rolled. DISCLOSED PATCH: route only random.random() in that module to a torch draw (replayed on
+    # recompute). randint/sample (layer choice, once per step, outside the forward) stay on Python random.
+    import random as _py_random, types
+    import safetune.interventions.harden.deeprefusal as _dr
+    _dr.random = types.SimpleNamespace(random=lambda: torch.rand(()).item(),
+                                       randint=_py_random.randint, sample=_py_random.sample)
+    print("patched deeprefusal.random.random -> torch.rand")
+    model.gradient_checkpointing_enable(gradient_checkpointing_kwargs={"use_reentrant": False})
+    model.config.use_cache = False
+    print("gradient checkpointing:", model.is_gradient_checkpointing)
+    tr = DeepRefusalTrainer(model, tok, calib_n=32, epochs=1, batch_size=1, lr=2e-4, logging_steps=4,
+                            target_modules=TARGETS)
     path = tr.train(benign_ds, out_dir="/content/harden_deepref", safety_dataset=harm_ds)
+    print(f"safetune fallback warnings: {_Count.n}")
+    assert _Count.n == 0, f"SafeTune skipped part of the loss {_Count.n} times (vacuous green)"
     res = {"ok": True, "seconds": round(time.perf_counter() - t), "peak_gb": round(torch.cuda.max_memory_allocated() / 1e9, 2)}
     del model, tr; gc.collect(); torch.cuda.empty_cache()
     m = AutoModelForCausalLM.from_pretrained(path, dtype=torch.float16, device_map="cuda").eval()
