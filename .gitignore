@@ -4,7 +4,8 @@
 *token*
 *.key
 .DS_Store
-# never commit model outputs or translated harmful prompts
+# never commit model outputs, or the translated HarmBench evaluation prompts (data/prompts.jsonl).
+# The short placeholder requests inside probes/ are a different thing and are disclosed in README.md.
 outs/
 data/
 *.jsonl

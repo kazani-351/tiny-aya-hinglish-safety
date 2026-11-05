@@ -48,6 +48,7 @@ The probes were written for a Google Colab VM and launched with `run_gpu.sh` / `
 
 - **Model replies to harmful prompts** (`outs/*.jsonl`, `outs/auditkit_*.json`). Withheld because the prompts are harmful requests. Scripts that read them (`analyze_rerun.py`, `probes/auditkit_beforeafter.py`, `probes/regex_hits_check.py`, `probes/refusal_pattern_check.py`) cannot run from this repo alone; their outputs are in `results/`.
 - **Translated harmful prompts** (`data/prompts.jsonl`). Withheld for the same reason. The English sources are public HarmBench prompts; the ids are in `selected_ids.json`.
+- **What is in the probe scripts instead:** 20 short harmful requests written for this project in Hinglish or Hindi (for example a fake ID, a stolen UPI PIN, a phishing email), plus English descriptions of 4 of them for the HarmBench judge. They are placeholder refusal-training rows, steering calibration text and smoke-test prompts, and they appear with refusals only, never with completions. The scripts also quote one model reply, a Zulu refusal. None of this is the translated HarmBench evaluation set above.
 - **Training rows** (`data/train_hinglish.jsonl`) and the pseudo-harmful prompts: [K: decide; published on HF or withheld].
 
 ## Timing
