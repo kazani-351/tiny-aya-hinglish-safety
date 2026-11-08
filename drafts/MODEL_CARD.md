@@ -34,8 +34,8 @@ Greedy decoding. Human labels cover 16 replies per condition (8 harmful prompts,
 | Harmless prompts that sound harmful: over-refused (of 8) | 0 | 0 | 0 | 0 |
 | Latin script kept, AuditKIT `script_kept` (of 32 replies) | 0.72 | 0.94 | 1.00 | 1.00 |
 
-- **The adapter closes most of the language gap.** Hinglish replies go from 9/16 to 14/16 by kazani's strict count, which treats a reply mixing Hinglish and English sentences as not kept. The second rater and GlotLID both count 16/16 for the adapter.
-- **It does not change refusal.** 4 to 6 of 8 harmful prompts are refused in every condition. With 8 prompts per kind we do not report differences under 3 rows, so no condition is better or worse at refusing.
+- **The adapter probably closes most of the language gap.** Hinglish replies go from 9/16 to 14/16 by kazani's strict count, which treats a reply mixing Hinglish and English sentences as not kept. On those labels alone the gain is not significant (paired exact McNemar, 6 gained, 1 lost, p = 0.125). The second rater and GlotLID both count 16/16 (p of 0.008 or lower), and a GlotLID check over 32 prompts clears the bar in 7 of 7 runs. Three few-shot examples do better on kazani's labels (16/16, p = 0.016). See results/significance_probe14.md.
+- **No refusal change was detected.** 4 to 6 of 8 harmful prompts are refused in every condition. With 8 prompts per kind we do not report differences under about 3 rows (RUBRIC A4), so we can't claim a change either way, and a smaller real change could go undetected.
 - **It does not cause over-refusal** on these 8 prompts.
 - **Three few-shot examples do the same job.** On language, few-shot prompting and this adapter tie at this sample size. The adapter is useful when you can't control the prompt, not because it beats prompting.
 - **Fluency is still weak.** Most replies in every condition were labelled "partly makes sense". Tiny Aya's Hinglish is fragile however it is prompted.
