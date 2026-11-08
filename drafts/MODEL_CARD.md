@@ -39,7 +39,7 @@ Greedy decoding. Human labels cover 16 replies per condition (8 harmful prompts,
 - **It does not cause over-refusal** on these 8 prompts.
 - **Three few-shot examples do the same job.** On language, few-shot prompting and this adapter tie at this sample size. The adapter is useful when you can't control the prompt, not because it beats prompting.
 - **Fluency is still weak.** Most replies in every condition were labelled "partly makes sense". Tiny Aya's Hinglish is fragile however it is prompted.
-- **No copying.** 0 of 64 adapter replies repeat any of the 42 training answers (longest shared run 3 to 5 words, against 4 for the base model).
+- **No copying.** 0 of 64 adapter replies (32 greedy, 32 sampled) repeat any of the 42 training answers (longest shared run 3 to 5 words, against 4 for the base model). 4 of the 64 use a stock refusal phrase that also appears in the training set.
 
 ### Who labelled
 - **Rater 1:** kazani, blind to condition. By the repository's commit order, the labels were committed (b5910a9) before the condition key was opened. Commit order is self-reported. The history up to commit 6f19fb2, which includes b5910a9, is timestamped with OpenTimestamps in Bitcoin block 974660 (2026-11-05 11:10 UTC). That proves those commits existed by that time, not their order; see the README's Timing section.

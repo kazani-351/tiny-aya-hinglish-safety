@@ -66,7 +66,7 @@ To check it:
 
 - Tiny Aya Global: CC BY-NC 4.0 with Cohere Labs' Acceptable Use Addendum. The adapter is shared under the same terms, noncommercial, research only.
 - SafeTune and AuditKIT: Lexsi Labs Source Available License (LSAL) v1.2.
-- HarmBench: [K: verify licence]. GlotLID: [K: verify licence].
+- HarmBench: MIT (github.com/centerforaisafety/HarmBench, checked 2026-11-08). GlotLID (cis-lmu/glotlid): Apache 2.0 plus notices, per its model card (checked 2026-11-08).
 
 ## AI assistance
 
