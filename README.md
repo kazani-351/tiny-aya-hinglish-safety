@@ -53,7 +53,14 @@ The probes were written for a Google Colab VM and launched with `run_gpu.sh` / `
 
 ## Timing
 
-The rubric and decision rules were committed before the results they govern; the label files were committed before the key was opened. Git dates are self-reported, so the commit SHAs are also anchored with OpenTimestamps (`proofs/*.ots`). A stamp proves the history existed by the stamp date, not the order of commits within it. Verify with `ots verify proofs/<file>.ots` (the opentimestamps-client package).
+The rubric and decision rules were committed before the results they govern; the label files were committed before the key was opened. Git dates are self-reported, so two commit SHAs are anchored in Bitcoin with OpenTimestamps: `24ec288` and `6f19fb2` (`proofs/commit-<sha>.sha` holds the SHA, `.sha.ots` is its proof). Both are in block 974660 (2026-11-05 11:10 UTC). A commit SHA covers every commit before it, so this anchors the history up to `6f19fb2`, including the label commit `b5910a9`.
+
+What this proves: those commits existed by 2026-11-05 11:10 UTC. What it does not prove: the order of commits before that, or the dates written inside them. Commits after `6f19fb2` are not stamped.
+
+To check it:
+
+1. The SHA is in this repo's history: `git merge-base --is-ancestor $(cat proofs/commit-6f19fb2e8ef4ae24a0846b832ca0f1451b849f44.sha) HEAD && echo ok`
+2. The proof is anchored in Bitcoin: `pip install opentimestamps-client==0.8.0`, then `ots verify proofs/commit-<sha>.sha.ots`. That command needs a local Bitcoin node. Without one, run `python proofs/ots_roots.py proofs/commit-<sha>.sha.ots proofs/commit-<sha>.sha` and compare each printed merkle root with that block's merkle root on a block explorer.
 
 ## Licences
 

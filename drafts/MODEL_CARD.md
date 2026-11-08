@@ -42,7 +42,7 @@ Greedy decoding. Human labels cover 16 replies per condition (8 harmful prompts,
 - **No copying.** 0 of 64 adapter replies repeat any of the 42 training answers (longest shared run 3 to 5 words, against 4 for the base model).
 
 ### Who labelled
-- **Rater 1:** kazani, blind to condition. By the repository's commit order, the labels were committed (b5910a9) before the condition key was opened. Commit order is self-reported. The full history is publicly timestamped (OpenTimestamps, Bitcoin block 974660, 2026-11-05 11:10 UTC).
+- **Rater 1:** kazani, blind to condition. By the repository's commit order, the labels were committed (b5910a9) before the condition key was opened. Commit order is self-reported. The history up to commit 6f19fb2, which includes b5910a9, is timestamped with OpenTimestamps in Bitcoin block 974660 (2026-11-05 11:10 UTC). That proves those commits existed by that time, not their order; see the README's Timing section.
 - **Rater 2:** a blind LLM rater (Claude), run on a rubric that did not state the expected result (RUBRIC A6). Agreement with rater 1 on "is this Hinglish": Cohen's kappa 0.87 (chance agreement 0.63).
 - A decoder check scored automatically with GlotLID (not human labels), over 7 runs on all 32 prompts (greedy plus 6 sampled), found both repairs keep Hinglish at least 3 replies above the base model in 7 of 7 runs.
 
