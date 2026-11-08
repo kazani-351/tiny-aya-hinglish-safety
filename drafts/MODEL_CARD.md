@@ -84,7 +84,7 @@ You need access to the base model on Hugging Face.
 
 ## Credits
 
-- The finding that safety and language-keeping weaken on code-mixed prompts, including Hinglish, is prior work: Kachireddy (2026), "A Measurement Crisis in Multilingual LLM Safety", SSRN [10.2139/ssrn.7152058](https://doi.org/10.2139/ssrn.7152058). This adapter tests one repair; it does not claim the finding.
+- Prior work this builds on: Kachireddy (2026), "A Measurement Crisis in Multilingual LLM Safety", SSRN [10.2139/ssrn.7152058](https://doi.org/10.2139/ssrn.7152058), on refusal checks that undercount Indic refusals; Krasnodębska, Kusa and Lipani (Findings of ACL 2026, [10.18653/v1/2026.findings-acl.1537](https://doi.org/10.18653/v1/2026.findings-acl.1537)), on measuring reply language next to refusal; Yadav (LoResLM 2026, [10.18653/v1/2026.loreslm-1.3](https://doi.org/10.18653/v1/2026.loreslm-1.3)), on Hinglish drift into English. This adapter tests one repair on one model; it does not claim those findings.
 - Write-up: [K: article link]. Code, labels and scorers: [K: repo link].
 
 ## AI assistance
