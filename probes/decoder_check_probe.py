@@ -39,7 +39,7 @@ for f in ("adapter_config.json", "adapter_model.safetensors"):
 import torch, fasttext
 from transformers import AutoTokenizer, AutoModelForCausalLM
 from peft import PeftModel
-lid = fasttext.load_model(hf_hub_download("cis-lmu/glotlid", "model.bin"))
+lid = fasttext.load_model(hf_hub_download("cis-lmu/glotlid", "model.bin", revision="85cd6716494360367b75f642b5bc78667605d0b4"))
 REPO = "CohereLabs/tiny-aya-global"
 tok = AutoTokenizer.from_pretrained(REPO)
 tok.padding_side = "left"

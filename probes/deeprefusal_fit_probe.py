@@ -27,7 +27,7 @@ from transformers import AutoTokenizer
 import safetune
 from safetune.runner.harden import DeepRefusalTrainer
 from transformers import AutoModelForCausalLM
-lid = fasttext.load_model(hf_hub_download("cis-lmu/glotlid", "model.bin"))
+lid = fasttext.load_model(hf_hub_download("cis-lmu/glotlid", "model.bin", revision="85cd6716494360367b75f642b5bc78667605d0b4"))
 REPO = "CohereLabs/tiny-aya-global"
 tok = AutoTokenizer.from_pretrained(REPO)
 print(f"setup {time.perf_counter()-t0:.0f}s | GPU {torch.cuda.get_device_properties(0).name}")

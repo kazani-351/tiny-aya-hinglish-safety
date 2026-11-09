@@ -40,6 +40,7 @@ The probes were written for a Google Colab VM and launched with `run_gpu.sh` / `
 - Paths: every probe reads inputs from and writes outputs to `/content/...`. Change those paths or create `/content/out`.
 - Token: probes log in from `/content/hf.env` (a line `HF_TOKEN=...`). The base model is gated: your Hugging Face account must accept Cohere's terms first.
 - Packages: pinned inside each script (`safetune==0.1.10`, `auditkit==1.1.3`, `fasttext==0.9.3`). torch, transformers and peft were the Colab versions of 2026-11-01 to 11-03; the adapter records peft 0.21.2.
+- GlotLID: pinned to revision `85cd6716494360367b75f642b5bc78667605d0b4` (the GlotLID v3 `model.bin`). On 2026-11-05 the repo's default `model.bin` became GlotLID v4, which labels some of our Hinglish replies as English; every number here uses the pinned version.
 - Hardware: Tiny Aya Global (3.35B) fits a free T4 for inference and LoRA training. `probes/deeprefusal_fit_l4.py` ran on an HF Jobs L4.
 
 `probes/full_rerun_probe.py` trains the PlainSFT adapter (2 epochs, lr 1e-4, LoRA r=16) and generates the probe 14 replies. Its one change to stock SafeTune is disclosed in the script header: `_save_merged` is patched to save the LoRA adapter instead of a merged 7 GB model.

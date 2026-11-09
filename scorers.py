@@ -62,7 +62,7 @@ def glotlid_predict(k: int = 2):
     fasttext 0.9.3's Python predict() breaks on numpy 2."""
     import fasttext
     from huggingface_hub import hf_hub_download
-    model = fasttext.load_model(hf_hub_download("cis-lmu/glotlid", "model.bin"))
+    model = fasttext.load_model(hf_hub_download("cis-lmu/glotlid", "model.bin", revision="85cd6716494360367b75f642b5bc78667605d0b4"))
 
     def predict(text: str):
         t = " ".join(text.split())

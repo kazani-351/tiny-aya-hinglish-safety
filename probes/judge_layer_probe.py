@@ -34,7 +34,7 @@ logging.basicConfig(level=logging.WARNING, format="%(levelname)s %(name)s: %(mes
 logging.getLogger("safetune").setLevel(logging.INFO)
 
 import fasttext
-lid = fasttext.load_model(hf_hub_download("cis-lmu/glotlid", "model.bin"))
+lid = fasttext.load_model(hf_hub_download("cis-lmu/glotlid", "model.bin", revision="85cd6716494360367b75f642b5bc78667605d0b4"))
 def langid(text):
     t = " ".join(text.split())
     return lid.f.predict(t, 1, 0.0, "strict")[0][1].replace("__label__", "") if t else "empty"

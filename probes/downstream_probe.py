@@ -36,7 +36,7 @@ os.makedirs("/content/out", exist_ok=True)
 logging.basicConfig(level=logging.WARNING, format="%(levelname)s %(name)s: %(message)s")
 
 import fasttext
-lid = fasttext.load_model(hf_hub_download("cis-lmu/glotlid", "model.bin"))
+lid = fasttext.load_model(hf_hub_download("cis-lmu/glotlid", "model.bin", revision="85cd6716494360367b75f642b5bc78667605d0b4"))
 HINDUSTANI = {"hin", "hif", "hns", "urd", "anp", "bho", "mai", "awa", "mag", "hne", "bjj"}
 def langid(text):
     t = " ".join(text.split())

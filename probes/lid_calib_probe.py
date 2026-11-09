@@ -11,7 +11,7 @@ import fasttext, os
 if os.path.exists("/content/hf.env"):
     os.remove("/content/hf.env")  # the runner always uploads the token; this probe doesn't need it
 from huggingface_hub import hf_hub_download  # GlotLID is ungated: no token needed
-lid = fasttext.load_model(hf_hub_download("cis-lmu/glotlid", "model.bin"))
+lid = fasttext.load_model(hf_hub_download("cis-lmu/glotlid", "model.bin", revision="85cd6716494360367b75f642b5bc78667605d0b4"))
 H = {"hin", "hif", "hns", "urd", "anp", "bho", "mai", "awa", "mag", "hne", "bjj"}
 rows = [json.loads(l) for l in open("/content/lid_calib_input.jsonl")]
 rows += [{"set": "hinglish_reply_style", "hb_id": i, "text": t} for i, t in enumerate([
