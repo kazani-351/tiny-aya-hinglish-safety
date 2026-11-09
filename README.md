@@ -4,7 +4,7 @@ Entry for the Lexsi Labs AI Safety and Alignment Hackathon, Track 2a, problem st
 
 Model: [CohereLabs/tiny-aya-global](https://huggingface.co/CohereLabs/tiny-aya-global). Tools chained: [SafeTune](https://github.com/Lexsi-Labs/SafeTune) (PlainSFT LoRA repair) and [AuditKIT](https://github.com/Lexsi-Labs/AuditKIT) (before/after scoring).
 
-Write-up: [K: article link]. Adapter: [K: HF model collection]. Labels and scores: [K: HF dataset collection].
+Write-up: [ARTICLE.md](https://github.com/kazani-351/tiny-aya-hinglish-safety/blob/main/ARTICLE.md). Adapter: [kazani351/tiny-aya-global-hinglish-lora](https://huggingface.co/kazani351/tiny-aya-global-hinglish-lora) (collection: [K: HF model collection URL]). Labels and scores: [kazani351/tiny-aya-hinglish-safety-data](https://huggingface.co/datasets/kazani351/tiny-aya-hinglish-safety-data) (collection: [K: HF dataset collection URL]).
 
 ## What is in this repo
 
@@ -44,12 +44,23 @@ The probes were written for a Google Colab VM and launched with `run_gpu.sh` / `
 
 `probes/full_rerun_probe.py` trains the PlainSFT adapter (2 epochs, lr 1e-4, LoRA r=16) and generates the probe 14 replies. Its one change to stock SafeTune is disclosed in the script header: `_save_merged` is patched to save the LoRA adapter instead of a merged 7 GB model.
 
+The scripts read the training rows as `data/train_hinglish.jsonl`. The HF dataset ships them as `train_hinglish.csv`, because the dataset viewer needs one file format. To rebuild the JSONL from it (byte-identical to the file used in training; CSV turns an empty `style` into an empty cell, and this writes it back as ""), run this from the repo root with the CSV in the same folder:
+
+```python
+import csv, json
+with open("data/train_hinglish.jsonl", "w", encoding="utf-8") as f:
+    for r in csv.DictReader(open("train_hinglish.csv", encoding="utf-8")):
+        f.write(json.dumps({k: r[k] or "" for k in ("id", "type", "style", "prompt", "answer")}, ensure_ascii=False) + "\n")
+```
+
+`probes/full_rerun_probe.py` reads one input file, `rerun_inputs.jsonl`: the 42 training rows (`kind`, `id`, `prompt`, `answer`), the 16 over-refusal prompts (`kind`, `id`, `prompt`), and the 16 translated harmful prompts. The first two can be rebuilt from the HF dataset; the harmful prompts are withheld (see below), so the full rerun can't be repeated from public files alone.
+
 ### What is not in this repo, and why
 
 - **Model replies to harmful prompts** (`outs/*.jsonl`, `outs/auditkit_*.json`). Withheld because the prompts are harmful requests. Scripts that read them (`analyze_rerun.py`, `probes/auditkit_beforeafter.py`, `probes/regex_hits_check.py`, `probes/refusal_pattern_check.py`) cannot run from this repo alone; their outputs are in `results/`.
 - **Translated harmful prompts** (`data/prompts.jsonl`). Withheld for the same reason. The English sources are public HarmBench prompts; the ids are in `selected_ids.json`.
 - **What is in the probe scripts instead:** 37 short harmful requests: 17 in Hinglish and 12 in Hindi (Devanagari), written for this project (for example a fake ID, a stolen UPI PIN, a threatening letter), and 8 in English. Of the English ones, 4 are copied from SafeTune's README calibration pairs (including a pipe bomb and ransomware request) and 4 are behaviour descriptions for the HarmBench judge. They are placeholder refusal-training rows, steering calibration text and smoke-test prompts, and they appear with refusals only, never with completions. The scripts also quote one model reply, a Zulu refusal. None of this is the translated HarmBench evaluation set above.
-- **Training rows** (`data/train_hinglish.jsonl`) and the pseudo-harmful prompts: [K: decide; published on HF or withheld]. Note: 9 prompts and 5 answers from the 12 benign training rows reuse placeholder text that is already in the probe scripts, so those benign rows are public either way. No refusal or harmful-sounding training row appears in this repo.
+- **Training rows** (`data/train_hinglish.jsonl`, 42 rows; `train_hinglish.csv` on HF, same fields) and the 16 pseudo-harmful prompts (`data/pseudo_harmful_hinglish.csv`) are not in this repo. They are published in the HF dataset collection ([kazani351/tiny-aya-hinglish-safety-data](https://huggingface.co/datasets/kazani351/tiny-aya-hinglish-safety-data)) under CC BY-NC 4.0 for research use. The 18 refusal rows pair a harmful Hinglish request with a refusal only, never with a completion.
 
 ## Timing
 

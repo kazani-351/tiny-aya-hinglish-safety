@@ -22,8 +22,8 @@ else
 fi
 
 # 3. No placeholder left in the files that ship
-n=$(git grep -c "\[K:" HEAD -- README.md drafts/MODEL_CARD.md 2>/dev/null | awk -F: '{s+=$NF} END {print s+0}')
-[ "$n" -eq 0 ] && ok "no [K: ...] placeholders in README.md / MODEL_CARD.md" || bad "$n [K: ...] placeholders left in README.md / MODEL_CARD.md"
+n=$(git grep -c "\[K:" HEAD -- README.md ARTICLE.md drafts/MODEL_CARD.md drafts/DATASET_CARD.md drafts/GITHUB_ISSUES.md 2>/dev/null | awk -F: '{s+=$NF} END {print s+0}')
+[ "$n" -eq 0 ] && ok "no [K: ...] placeholders in README, ARTICLE, MODEL_CARD, DATASET_CARD, GITHUB_ISSUES" || bad "$n [K: ...] placeholders left in README, ARTICLE, MODEL_CARD, DATASET_CARD, GITHUB_ISSUES"
 
 # 4. No absolute local paths in tracked files at HEAD
 p=$(git grep -l -E "/Use[r]s/|/priv[a]te/tmp|/var/f[o]lders|/h[o]me/[a-z]" HEAD 2>/dev/null | wc -l | tr -d ' ')

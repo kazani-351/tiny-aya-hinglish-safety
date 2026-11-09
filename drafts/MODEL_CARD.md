@@ -64,7 +64,7 @@ from peft import PeftModel
 
 base = AutoModelForCausalLM.from_pretrained("CohereLabs/tiny-aya-global", torch_dtype="auto")
 tok = AutoTokenizer.from_pretrained("CohereLabs/tiny-aya-global")
-model = PeftModel.from_pretrained(base, "[K: HF repo id]")
+model = PeftModel.from_pretrained(base, "kazani351/tiny-aya-global-hinglish-lora")
 ```
 
 You need access to the base model on Hugging Face.
@@ -78,14 +78,14 @@ You need access to the base model on Hugging Face.
 
 ## Licence and attribution
 
-- **Base model:** [CohereLabs/tiny-aya-global](https://huggingface.co/CohereLabs/tiny-aya-global) by Cohere Labs, released under [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/) with Cohere Labs' Acceptable Use Addendum. This adapter is modified from it as described in "How it was made" and is shared under the same licence, for noncommercial use only.
-- **Acceptable use:** use of this adapter is subject to the [Cohere Labs Acceptable Use Policy](https://docs.cohere.com/docs/c4ai-acceptable-use-policy). [K: confirm this is the AUP URL linked from the base model card]
+- **Base model:** [CohereLabs/tiny-aya-global](https://huggingface.co/CohereLabs/tiny-aya-global) by Cohere Labs, released under [CC BY-NC 4.0](https://cohere.com/cohere-labs-cc-by-nc-license) with Cohere Labs' Acceptable Use Addendum. This adapter is modified from it as described in "How it was made" and is shared under the same licence, for noncommercial use only.
+- **Acceptable use:** use of this adapter is subject to the [Cohere Labs Acceptable Use Policy](https://docs.cohere.com/docs/c4ai-acceptable-use-policy).
 - **Training tool:** trained with [SafeTune](https://github.com/Lexsi-Labs/SafeTune), licensed under the Lexsi Labs Source Available License (LSAL) v1.2. Per LSAL, this checkpoint is for noncommercial research and must not be deployed in production.
 
 ## Credits
 
 - Prior work this builds on: Kachireddy (2026), "A Measurement Crisis in Multilingual LLM Safety", SSRN [10.2139/ssrn.7152058](https://doi.org/10.2139/ssrn.7152058), on refusal checks that undercount Indic refusals; Krasnodębska, Kusa and Lipani (Findings of ACL 2026, [10.18653/v1/2026.findings-acl.1537](https://doi.org/10.18653/v1/2026.findings-acl.1537)), on measuring reply language next to refusal; Yadav (LoResLM 2026, [10.18653/v1/2026.loreslm-1.3](https://doi.org/10.18653/v1/2026.loreslm-1.3)), on Hinglish drift into English. This adapter tests one repair on one model; it does not claim those findings.
-- Write-up: [K: article link]. Code, labels and scorers: [K: repo link].
+- Write-up: [ARTICLE.md](https://github.com/kazani-351/tiny-aya-hinglish-safety/blob/main/ARTICLE.md). Code and scorers: [GitHub](https://github.com/kazani-351/tiny-aya-hinglish-safety). Training rows, labels and per-reply scores: [dataset](https://huggingface.co/datasets/kazani351/tiny-aya-hinglish-safety-data).
 
 ## AI assistance
 
