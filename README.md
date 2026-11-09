@@ -4,7 +4,7 @@ Entry for the Lexsi Labs AI Safety and Alignment Hackathon, Track 2a, problem st
 
 Model: [CohereLabs/tiny-aya-global](https://huggingface.co/CohereLabs/tiny-aya-global). Tools chained: [SafeTune](https://github.com/Lexsi-Labs/SafeTune) (PlainSFT LoRA repair) and [AuditKIT](https://github.com/Lexsi-Labs/AuditKIT) (before/after scoring).
 
-Write-up: [ARTICLE.md](https://github.com/kazani-351/tiny-aya-hinglish-safety/blob/main/ARTICLE.md). Adapter: [kazani351/tiny-aya-global-hinglish-lora](https://huggingface.co/kazani351/tiny-aya-global-hinglish-lora) (collection: [K: HF model collection URL]). Labels and scores: [kazani351/tiny-aya-hinglish-safety-data](https://huggingface.co/datasets/kazani351/tiny-aya-hinglish-safety-data) (collection: [K: HF dataset collection URL]).
+Write-up: [ARTICLE.md](https://github.com/kazani-351/tiny-aya-hinglish-safety/blob/main/ARTICLE.md). Adapter: [kazani351/tiny-aya-global-hinglish-lora](https://huggingface.co/kazani351/tiny-aya-global-hinglish-lora) (collection: [tiny-aya-hinglish-safety-model](https://huggingface.co/collections/kazani351/tiny-aya-hinglish-safety-model)). Labels and scores: [kazani351/tiny-aya-hinglish-safety-data](https://huggingface.co/datasets/kazani351/tiny-aya-hinglish-safety-data) (collection: [tiny-aya-hinglish-safety-data](https://huggingface.co/collections/kazani351/tiny-aya-hinglish-safety-data)).
 
 ## What is in this repo
 

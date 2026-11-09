@@ -111,8 +111,8 @@ The other thing I'd buy is more prompts. About 80 per kind would let me tell few
 
 ## 8. Artifacts
 
-- Model collection: the LoRA adapter, with a model card that says what it changes and what it doesn't: [kazani351/tiny-aya-global-hinglish-lora](https://huggingface.co/kazani351/tiny-aya-global-hinglish-lora), collection [K: HF model collection URL]
-- Dataset collection: the 42 training rows, the 16 over-refusal prompts, my labels and the second rater's, per-reply scores, and the unblinding keys, with no reply text: [kazani351/tiny-aya-hinglish-safety-data](https://huggingface.co/datasets/kazani351/tiny-aya-hinglish-safety-data), collection [K: HF dataset collection URL]
+- Model collection: the LoRA adapter, with a model card that says what it changes and what it doesn't: [kazani351/tiny-aya-global-hinglish-lora](https://huggingface.co/kazani351/tiny-aya-global-hinglish-lora), collection [tiny-aya-hinglish-safety-model](https://huggingface.co/collections/kazani351/tiny-aya-hinglish-safety-model)
+- Dataset collection: the 42 training rows, the 16 over-refusal prompts, my labels and the second rater's, per-reply scores, and the unblinding keys, with no reply text: [kazani351/tiny-aya-hinglish-safety-data](https://huggingface.co/datasets/kazani351/tiny-aya-hinglish-safety-data), collection [tiny-aya-hinglish-safety-data](https://huggingface.co/collections/kazani351/tiny-aya-hinglish-safety-data)
 - Code: scorers, probes and the label analysis. `python3 analyze_labels.py` rebuilds the tables on a CPU in seconds: [kazani-351/tiny-aya-hinglish-safety](https://github.com/kazani-351/tiny-aya-hinglish-safety)
 - Tool feedback: GitHub issues on SafeTune (a fallback to full fine-tuning that only logs a warning, a skipped benign loss, merged-model-only saves) and AuditKIT (English-only refusal detection), written up with repro steps in [`drafts/GITHUB_ISSUES.md`](https://github.com/kazani-351/tiny-aya-hinglish-safety/blob/main/drafts/GITHUB_ISSUES.md)
 
