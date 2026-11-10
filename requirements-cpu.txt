@@ -1,0 +1,8 @@
+# reproduce_scores.ipynb and scorers.py on CPU (no GPU, no login). Tested on macOS (Intel), Python 3.12 and 3.15.
+# fasttext has no prebuilt package for every platform; pip may compile it, which needs a C++ compiler.
+huggingface_hub==2.4.0
+safetensors==0.8.0
+numpy==2.5.4
+fasttext==0.9.3
+nbconvert==7.17.2
+ipykernel==7.4.0

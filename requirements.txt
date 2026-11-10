@@ -1,0 +1,14 @@
+# GPU probes (probes/*.py). Needs Linux + an NVIDIA GPU with CUDA; torch 2.15 has no macOS Intel build.
+# torch / transformers / peft / accelerate: the versions that loaded the base model + published adapter in the
+# 2026-11-09 reproduction run (HF Jobs L4). The original probes ran on Colab defaults of 2026-11-01 to 11-03.
+# safetune / auditkit / fasttext: the pins inside the probe scripts. This set resolves together on Linux, Python 3.12;
+# the training probe (full_rerun_probe.py) has not been re-run with it.
+torch==2.15.0
+transformers==5.22.2
+peft==0.21.2
+accelerate==1.15.0
+safetune==0.1.10
+auditkit==1.1.3
+fasttext==0.9.3
+datasets==5.2.0
+huggingface_hub==2.4.0
