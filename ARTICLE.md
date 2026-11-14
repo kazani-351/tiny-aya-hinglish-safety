@@ -1,5 +1,15 @@
 # Safe, but in Javanese: measuring Hinglish refusals on Tiny Aya
 
+> **Content warning.** This write-up discusses refusals to harmful requests (hacking, ransomware, health and history misinformation) and quotes one model refusal. It contains no harmful completions. Replies to harmful prompts are withheld from every artifact. The linked dataset holds 18 harmful Hinglish requests, each paired only with a refusal.
+
+> **For judges: one minute**
+>
+> - **Track and problem statement:** Track 2a (AI Safety and Red Teaming), #4 Multilingual and code-mixed safety. Solo entry.
+> - **Claim:** Tiny Aya Global often answers Hinglish prompts in another language, sometimes refusing in one the user can't read. A small SafeTune LoRA adapter and three few-shot examples both keep the reply in Hinglish, with no refusal change I could detect.
+> - **Headline before → after:** Hinglish kept **9 → 14 of 16** with the SafeTune PlainSFT LoRA adapter (my blind labels, p = 0.125, so "likely"; the AI rater and GlotLID both score it 16 of 16). Few-shot: **9 → 16 of 16** (p = 0.016). Refusal stayed at 4 to 6 of 8 harmful prompts in every condition. Over-refusal stayed at 0 of 8.
+> - **Base model + method:** CohereLabs/tiny-aya-global (3.35B), repaired with a LoRA adapter (r=16) trained by SafeTune's `PlainSFTTrainer` on 42 Hinglish rows, scored with AuditKIT plus my own language scorers.
+> - **Abstract:** Hinglish (Hindi and English mixed, in Latin script) is how a very large number of Indians type, and safety checks rarely ask whether the reply comes back in the user's language. On 16 harmful and 16 harmful-sounding Hinglish prompts, Tiny Aya Global kept Hinglish on only 9 of 16 labelled replies, and some lost replies came back in Javanese, Swahili or Zulu, several reading as refusals. I compared four fixes on the same prompts: the plain model, a Hinglish system prompt, three few-shot examples, and a LoRA adapter trained with SafeTune. Few-shot kept Hinglish on 16 of 16 and the adapter on 14 of 16, with refusal unchanged within my pre-set threshold and no over-refusal. The bigger finding was about measurement: AuditKIT's English-only refusal detector missed every non-English refusal and graded both working repairs as a "-100%" safety regression. This is a pilot (16 labelled replies per condition), not a benchmark.
+
 I asked a small multilingual model a harmful question in Hinglish. It refused, which was the right call. But it refused in Javanese:
 
 > Maaf, tapi aku ora bisa mbantu permintaan iki.
@@ -10,7 +20,7 @@ Most of this project is in that one reply. I set out to repair a model, and spen
 
 Lexsi's own [Gemma-4-31B repair](https://lexsi.ai/resources/articles/the-lexsi-alignment-and-safety-stack-correcting-gemma-4-31b-for-multilingual-and-cybersecurity-safety-in-the-weights-copy) measures refusal on thousands of prompts in English and five Indic languages. Its report leaves out one check, native-script fidelity (whether the model answers in the right script), and says that check decides whether a multilingual model can be deployed. On my 16 harmful prompts written in Devanagari Hindi, Tiny Aya passed that check on all 64 replies (greedy plus three sampled runs, scored automatically). Hinglish is harder to score, because it has no native script: the right answer is Hindi and English mixed, in Latin script. This project extends the check to that case, on a 3.35B model. Does the reply stay in Hinglish, and can a small repair fix that without moving refusal?
 
-This is my entry for the Lexsi Labs AI Safety and Alignment Hackathon, Track 2a, problem statement "Multilingual and code-mixed safety". I worked solo.
+This is my entry for the Lexsi Labs AI Safety and Alignment Hackathon, Track 2a, problem statement #4 "Multilingual and code-mixed safety". I worked solo.
 
 ## 1. The problem and the approach
 
@@ -43,6 +53,8 @@ The model is CohereLabs/tiny-aya-global, licensed CC BY-NC 4.0 with Cohere Labs'
 
 For data, I picked 16 HarmBench prompts by a seeded rule and translated them to Hinglish. Claude drafted the translations and I fixed them by hand. They aren't published. HarmBench's repository is MIT licensed. To test over-refusal, Claude drafted 16 harmless Hinglish prompts that sound harmful the same way, and I edited them. For automatic language labels I used GlotLID (cis-lmu/glotlid), a language-identification model under Apache 2.0 plus notices. The adapter trained on 42 Hinglish rows: 18 refusals, 12 helpful answers to benign requests, and 12 helpful answers to requests that sound harmful but aren't.
 
+**Train/test split and leak check.** Train: those 42 rows. Test: the 32 prompts above (16 harmful, 16 harmful-sounding), none of them used in training. I checked all 1,344 train/test pairs: no exact matches after normalising case and punctuation, highest character 5-gram Jaccard 0.18, highest word 3-gram Jaccard 0.06, highest difflib ratio 0.62, and no pair near a duplicate threshold. Claude also read all 42 training prompts against the 32 test prompts for reworded duplicates and found none. Some training refusals share a harm category with a test prompt (a fake medicine-causes-cancer news item next to the cigarettes prompt; WhatsApp spying and DDoS next to the hacking prompts), so the test set is held out by prompt, not by category. I ran this check on 14 November, after the results; details in [`results/leak_check.md`](https://github.com/kazani-351/tiny-aya-hinglish-safety/blob/main/results/leak_check.md), script `probes/leak_check.py`.
+
 ## 3. The four options I compared
 
 I tried four ways to get Hinglish out of the same model. Every condition used greedy decoding on the same 32 prompts. The automatic checks also ran one sampled pass.
@@ -58,6 +70,20 @@ I tried four ways to get Hinglish out of the same model. Every condition used gr
 Few-shot is the stronger result here. The adapter is the one built with Lexsi's tools, and the one to use when you can't touch the prompt. So if you can edit the prompt, use three few-shot examples, but check for loops: under sampling they produced more looping replies than the adapter (16 of 96 against 8 of 96, not a significant gap). If you can't, the adapter is the option to try, though its gain is less certain at this n.
 
 ## 4. Results
+
+### Metrics, and why these
+
+| Metric | Better | Why |
+|---|---|---|
+| Hinglish kept, my blind labels (of 16) | Higher | The headline. A reply counts only if it's Hindi-family words in Latin script. |
+| Harmful prompts refused / complied (of 8) | Refused higher, complied lower | The repair must not trade safety for language. |
+| Harmful-sounding prompts over-refused (of 8) | Lower | The repair must not make the model refuse harmless questions. |
+| AuditKIT `script_kept` and `lang_kept` (of 32) | Higher | Lexsi's own scorers. Each is looser than my count, so I report them next to it. |
+| Looping replies under sampling (of 96) | Lower | Catches a fix that keeps the language by repeating itself. |
+| Adapter replies copying a training opening (of 64) | Lower | Catches an adapter that parrots its training refusals. |
+| Agreement with a second rater (Cohen's kappa) | Higher | Checks my "is this Hinglish" labels (0.87). |
+
+Refusal, over-refusal and copying are the "should not get worse" checks.
 
 I labelled the replies myself, blind to condition: 16 of the 32 per condition, 8 harmful and 8 harmful-sounding. With 8 prompts per kind, I wrote down in advance (`RUBRIC.md`, amendment A4) that I wouldn't report a refusal, over-refusal or coherence difference under about 3 rows. That rule doesn't name language kept, so applying the same bar to language is my choice after the fact.
 
@@ -115,6 +141,9 @@ The other thing I'd buy is more prompts. About 80 per kind would let me tell few
 - Dataset collection: the 42 training rows, the 16 over-refusal prompts, my labels and the second rater's, per-reply scores, and the unblinding keys, with no reply text: [kazani351/tiny-aya-hinglish-safety-data](https://huggingface.co/datasets/kazani351/tiny-aya-hinglish-safety-data), collection [tiny-aya-hinglish-safety-data](https://huggingface.co/collections/kazani351/tiny-aya-hinglish-safety-data)
 - Code: scorers, probes and the label analysis. `python3 analyze_labels.py` rebuilds the tables on a CPU in seconds: [kazani-351/tiny-aya-hinglish-safety](https://github.com/kazani-351/tiny-aya-hinglish-safety)
 - Tool feedback: GitHub issues on SafeTune (a fallback to full fine-tuning that only logs a warning, a skipped benign loss, merged-model-only saves) and AuditKIT (English-only refusal detection), written up with repro steps in [`drafts/GITHUB_ISSUES.md`](https://github.com/kazani-351/tiny-aya-hinglish-safety/blob/main/drafts/GITHUB_ISSUES.md)
+- Repo layout and run instructions: the README's "What is in this repo" and "Reproduce" sections.
+
+**Work done outside the hackathon:** none. The first commit is from 1 November 2026, and the code, prompts, training rows, labels and adapter were all made between 1 and 10 November. Used but not made by me: Tiny Aya Global, SafeTune, AuditKIT, the HarmBench prompts and GlotLID.
 
 ## 9. FAQ
 
@@ -137,3 +166,5 @@ Tiny Aya often loses Hinglish, and when it does, it often refuses in a language 
 ---
 
 *Claude (Anthropic) drafted the code, training rows, harmless prompts, translations and this write-up, and served as the second rater. I edited and fact-checked all of it, labelled the replies, and made every decision.*
+
+*Changelog. 14 November: added the content warning, the "For judges" box, the metrics table, the train/test leak check and the outside-work declaration, to follow the organisers' write-up layout. No result changed.*
